@@ -1,8 +1,32 @@
 IsInteger <- function(value) {
+  # Determines whether the input is a valid integer
+  #
+  # Args:
+  #   value: the input to test
+  #
+  # Returns:
+  #   TRUE if the input is an integer
+  #   FALSE otherwise
+
   return(all.equal(value, as.integer(value)))
 }
 
 GetOutcomesInState <- function(state, outcome) {
+  # Reads the outcome-of-care-measures.csv file and returns a data frame of
+  # given outcomes within the given state.  The hospital name is the
+  # name provided in the Hospital.Name variable. Hospitals that do not have data
+  # on a particular outcome are excluded from the set of hospitals.
+  #
+  # Args:
+  #   state: the 2-character abbreviated name of a state
+  #   outcome: the mortality outcome, must be one of the following:
+  #     “heart attack”, “heart failure”, or “pneumonia”.
+  #
+  # Returns:
+  #   A data frame of given outcomes within the given state.
+  #   The data frame is sorted by outcome (ASC) and hospital name (ASC)
+  #   NAs are removed
+
   # Read outcome data
   dfOutcomes <- read.csv("outcome-of-care-measures.csv",
                          colClasses = "character")
