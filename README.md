@@ -18,3 +18,11 @@ Plots a histogram of the 30-day mortality rates for heart attacks.  Reads the ou
 ## BestHospitals
 
 Reads the outcome-of-care-measures.csv file and returns a character vector with the name of the hospitals that have the best (i.e. lowest) 30-day mortality for the specified outcome in that state. The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.
+
+## RankHospitals
+
+Reads the outcome-of-care-measures.csv file and returns a character vector with the name of the hospital that matches the ranking of the 30-day mortality for the specified outcome in that state. The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.
+
+## GetOutcomesInState
+
+Utility function to read the outcome-of-care-measures.csv file and return a data frame of given outcomes within the given state.  The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals.
