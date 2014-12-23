@@ -1,6 +1,6 @@
 # hospitalquality
 
-R scripts that analyzes and ranks hospitals based on mortality rates from the Hospital Compare data run by the U.S. Department of Health and Human Services.
+R scripts that analyze and rank hospitals based on mortality rates from the Hospital Compare data run by the U.S. Department of Health and Human Services.
 
 ## Data
 
