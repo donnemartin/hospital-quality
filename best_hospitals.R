@@ -1,6 +1,6 @@
 BestHospitals <- function(state, outcome) {
   # Reads the outcome-of-care-measures.csv file and returns a character vector
-  # with the name of the hospitals that have the best (i.e. lowest) 30-day
+  # with the name of the hospital that has the best (i.e. lowest) 30-day
   # mortality for the specified outcome in that state. The hospital name is the
   # name provided in the Hospital.Name variable. Hospitals that do not have data
   # on a particular outcome are excluded from the set of hospitals when
@@ -12,52 +12,23 @@ BestHospitals <- function(state, outcome) {
   #     “heart attack”, “heart failure”, or “pneumonia”.
   #
   # Returns:
-  #   The names of the hospital within the given state with the best (minimum)
+  #   The name of the hospital within the given state with the best (minimum)
   #   value for the given mortality rate outcome
 
-  # Read outcome data
-  dfOutcomes <- read.csv("outcome-of-care-measures.csv",
-                         colClasses = "character")
+  source("utils.R")
 
-  mortalityCol <- NULL
-
-  # Determine the column index to read based on the given outcome
-  if (outcome == "heart attack") {
-    kHeartAttackMortalityCol <- 11
-    mortalityCol <- kHeartAttackMortalityCol
-  } else if (outcome == "heart failure") {
-    kHeartFailureMortalityCol <- 17
-    mortalityCol <- kHeartFailureMortalityCol
-  } else if (outcome == "pneumonia") {
-    kPneumoniaMortalityCol <- 23
-    mortalityCol <- kPneumoniaMortalityCol
-  } else {
-    stop("Invalid outcome: Must be 'heart attack, 'heart failure', 'pnumonia")
-  }
-
-  kStateCol <- 7
-
-  # Check if we have data on the given state
-  if (!is.element(state, dfOutcomes[, kStateCol])) {
-    stop("State not found in data set")
-  }
-
-  # Get the subset of hospitals and mortalities for the given state and outcome
-  kHospitalNameCol <- 2
-  dfOutcomesInState <- subset(dfOutcomes,
-                              select=c(kHospitalNameCol, mortalityCol),
-                              subset=(State == state))
+  # Get our data frame of hospitals and given outcomes within the given state
+  dfOutcomesInState <- GetOutcomesInState(state, outcome)
 
   # Get the subset of hospitals and mortalities with the minimum mortality
   # Exclude NAs
-  kResultOutcomeCol = 2
-  dfResult <-
-    dfOutcomesInState[which(dfOutcomesInState[, kResultOutcomeCol] ==
-                              min(dfOutcomesInState[, kResultOutcomeCol],
-                                  na.rm=TRUE)), ]
+  # Since dfOutcomesInState is already sorted in ascending order based on
+  # outcome and already excludes NAs, this is simply the first element
+  kMinOutcomeIndex = 1
+  dfResult <- dfOutcomesInState[kMinOutcomeIndex, ]
 
-  # Return hospital names in that state with lowest 30-day death rate
-  kResultHospitalCol = 1
+  # Return hospital name in that state with lowest 30-day death rate
+  kResultHospitalCol <- 1
   return(dfResult[, kResultHospitalCol])
 }
 
