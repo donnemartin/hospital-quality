@@ -1,6 +1,6 @@
-# airpollution
+# hospitalquality
 
-R scripts that analyze sulfate and nitrate pollution data from sensors monitoring fine particulate matter air pollution at 332 locations in the United States.
+R scripts that analyzes and ranks hospitals based on mortality rates from the Hospital Compare data run by the U.S. Department of Health and Human Services.
 
 ## Data
 
