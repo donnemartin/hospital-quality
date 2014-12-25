@@ -15,14 +15,20 @@ for some background on this particular topic).
 
 Plots a histogram of the 30-day mortality rates for heart attacks.  Reads the outcome-of-care-measures.csv file and plots the 30-day mortality rates for heart attacks.
 
+## GetOutcomes
+
+Utility function to read the outcome-of-care-measures.csv file and return a data frame of given outcomes within the given state.  The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals.
+
+Called by BestHospitals, RankHospitals, and RankAllHospitals.
+
 ## BestHospitals
 
-Reads the outcome-of-care-measures.csv file and returns a character vector with the name of the hospitals that have the best (i.e. lowest) 30-day mortality for the specified outcome in that state. The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.
+Returns a character vector with the name of the hospitals that have the best (i.e. lowest) 30-day mortality for the specified outcome in that state.
 
 ## RankHospitals
 
-Reads the outcome-of-care-measures.csv file and returns a character vector with the name of the hospital that matches the ranking of the 30-day mortality for the specified outcome in that state. The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals when deciding the rankings.
+Returns a character vector with the name of the hospital that matches the ranking of the 30-day mortality for the specified outcome in that state.
 
-## GetOutcomesInState
+## RankAllHospitals
 
-Utility function to read the outcome-of-care-measures.csv file and return a data frame of given outcomes within the given state.  The hospital name is the name provided in the Hospital.Name variable. Hospitals that do not have data on a particular outcome are excluded from the set of hospitals.
+Returns a data frame containing the names of the hospitals that are the best in their respective states for 30-day mortality for the specified outcome.  Returns a value for every state (some may be NA).
