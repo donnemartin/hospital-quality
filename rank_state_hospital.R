@@ -1,4 +1,4 @@
-RankHospital <- function(state, outcome, rank="best") {
+RankStateHospital <- function(state, outcome, rank="best") {
   # Reads the outcome-of-care-measures.csv file and returns a character vector
   # with the name of the hospital that matches the ranking of the 30-day
   # mortality for the specified outcome in that state. The hospital name is the
@@ -49,9 +49,9 @@ RankHospital <- function(state, outcome, rank="best") {
 }
 
 # Tests
-rankhospital("TX", "heart failure", 4)
+RankStateHospital("TX", "heart failure", 4)
 # [1] "DETAR HOSPITAL NAVARRO"
-rankhospital("MD", "heart attack", "worst")
+RankStateHospital("MD", "heart attack", "worst")
 # [1] "HARFORD MEMORIAL HOSPITAL"
-rankhospital("MN", "heart attack", 5000)
+RankStateHospital("MN", "heart attack", 5000)
 # [1] NA
