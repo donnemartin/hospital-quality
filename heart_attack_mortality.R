@@ -19,5 +19,8 @@ HeartAttackMortality <- function() {
     as.numeric(dfOutcomes[, kHeartAttackMortalityCol])
 
   # Graph a histogram of the heart attack mortality
-  hist(dfOutcomes[, kHeartAttackMortalityCol])
+  hist(dfOutcomes[, kHeartAttackMortalityCol],
+       main="Heart Attack Mortality",
+       xlab="30 Day Death Mortality",
+       col="gray")
 }
