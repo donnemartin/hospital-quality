@@ -10,7 +10,7 @@ RankStateHospital <- function(state, outcome, rank="best") {
   #   state: the 2-character abbreviated name of a state
   #   outcome: the mortality outcome, must be one of the following:
   #     “heart attack”, “heart failure”, or “pneumonia”.
-  #   num: the ranking of the hospital within the given state
+  #   rank: the ranking of the hospital within the given state
   #     Can be an integer or "best" or "worst"
   #
   # Returns:
@@ -19,31 +19,17 @@ RankStateHospital <- function(state, outcome, rank="best") {
   #   If the number given by num is larger than the number of hospitals in that
   #   state, then the function returns NA
 
-  ## Read outcome data
-  ## Check that state and outcome are valid
-  ## Return hospital name in that state with the given rank
-  ## 30-day death rate
-
   source("utils.R")
 
   # Get our data frame of hospitals and given outcomes within the given state
-  dfOutcomesInState <- GetOutcomesInState(state, outcome)
+  dfOutcomes <- GetOutcomes(state, outcome)
 
-  hospitalRank <- NULL
-
-  # Check if rank is valid
-  if (rank == "best") {
-    hospitalRank <- 1
-  } else if (rank == "worst") {
-    hospitalRank <- nrow(dfOutcomesInState)
-  } else if (IsInteger(rank)) {
-    hospitalRank <- rank
-  } else {
-    stop("Invalid rank")
-  }
+  # Get the numerical index of the hospital rank that we can use in
+  # our dataframe
+  hospitalRank <- TranslateRankToDataFrameIndex(dfOutcomes, rank)
 
   # Return hospital name in that state with the matching rank
-  dfResult <- dfOutcomesInState[hospitalRank, ]
+  dfResult <- dfOutcomes[hospitalRank, ]
   kResultHospitalCol <- 1
   return(dfResult[, kResultHospitalCol])
 }

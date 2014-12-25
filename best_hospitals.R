@@ -18,14 +18,13 @@ BestHospitals <- function(state, outcome) {
   source("utils.R")
 
   # Get our data frame of hospitals and given outcomes within the given state
-  dfOutcomesInState <- GetOutcomesInState(state, outcome)
+  dfOutcomes <- GetOutcomes(state, outcome)
 
   # Get the subset of hospitals and mortalities with the minimum mortality
-  # Exclude NAs
-  # Since dfOutcomesInState is already sorted in ascending order based on
+  # Since dfOutcomes is already sorted in ascending order based on
   # outcome and already excludes NAs, this is simply the first element
   kMinOutcomeIndex = 1
-  dfResult <- dfOutcomesInState[kMinOutcomeIndex, ]
+  dfResult <- dfOutcomes[kMinOutcomeIndex, ]
 
   # Return hospital name in that state with lowest 30-day death rate
   kResultHospitalCol <- 1

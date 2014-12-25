@@ -11,7 +11,31 @@ IsInteger <- function(value) {
   return(all.equal(value, as.integer(value)))
 }
 
-GetOutcomesInState <- function(state, outcome) {
+TranslateRankToDataFrameIndex <- function(dfOutcomes, rank) {
+  # Translates the input rank to the associated data frame index
+  #
+  # Args:
+  #   dfOutcomes: the data frame of hospital names, outcomes,
+  #     and mortality rates
+  #   rank: the ranking of the hospital within the given state
+  #     Can be an integer or "best" or "worst"
+  #
+  # Returns:
+  #   The data frame index associated with the input rank
+
+  if (rank == "best") {
+    hospitalRank <- 1
+  } else if (rank == "worst") {
+    hospitalRank <- nrow(dfOutcomes)
+  } else if (IsInteger(rank)) {
+    hospitalRank <- rank
+  } else {
+    stop("Invalid rank")
+  }
+  return(hospitalRank)
+}
+
+GetOutcomes <- function(state="all", outcome) {
   # Reads the outcome-of-care-measures.csv file and returns a data frame of
   # given outcomes within the given state.  The hospital name is the
   # name provided in the Hospital.Name variable. Hospitals that do not have data
@@ -50,31 +74,41 @@ GetOutcomesInState <- function(state, outcome) {
   # Convert the heart attack mortality column from string to numeric,
   # which will introduce a warning about NAs being introduced
   # This is necessary for the hist call below
-  dfOutcomes[, mortalityCol] <-
-    as.numeric(dfOutcomes[, mortalityCol])
+  dfOutcomes[, mortalityCol] <- as.numeric(dfOutcomes[, mortalityCol])
 
   kStateCol <- 7
 
-  # Check if we have data on the given state
-  if (!is.element(state, dfOutcomes[, kStateCol])) {
-    stop("State not found in data set")
+  if (state != "all") {
+    # Check if we have data on the given state
+    if (!is.element(state, dfOutcomes[, kStateCol])) {
+      stop("State not found in data set")
+    }
   }
 
-  # Get the subset of hospitals and mortalities for the given state and outcome
   kHospitalNameCol <- 2
+
+  # Get all hospitals and states for the given outcome
   dfOutcomesInState <- subset(dfOutcomes,
-                              select=c(kHospitalNameCol, mortalityCol),
-                              subset=(State == state))
+                              select=c(kHospitalNameCol,
+                                       kStateCol,
+                                       mortalityCol))
+
+  # Filter on only the given state if we are not looking at all states
+  if (state != "all") {
+    dfOutcomesInState <- subset(dfOutcomesInState,
+                                subset=(State == state))
+  }
 
   # Change the column names to something more manageable
-  colnames(dfOutcomesInState) <- c("Hospital.Name", "Outcome")
+  colnames(dfOutcomesInState) <- c("Hospital.Name", "State", "Outcome")
 
   # Sort the dataset by outcome and hospital name
   # Ommit any NAs
-  kResultOutcomeCol <- 2
-  dfOutcomesInState <- dfOutcomesInState[order(dfOutcomesInState$Outcome,
-                                               dfOutcomesInState$Hospital.Name,
-                                               na.last=NA), ]
+  dfOutcomesInState <-
+    dfOutcomesInState[order(dfOutcomesInState$State,
+                            dfOutcomesInState$Outcome,
+                            dfOutcomesInState$Hospital.Name,
+                            na.last=NA), ]
 
   return(dfOutcomesInState)
 }

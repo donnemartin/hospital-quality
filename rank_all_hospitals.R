@@ -13,7 +13,7 @@ rankall <- function(outcome, rank="best") {
   # Args:
   #   outcome: the mortality outcome, must be one of the following:
   #     “heart attack”, “heart failure”, or “pneumonia”.
-  #   num: the ranking of the hospital within the given state
+  #   rank: the ranking of the hospital within the given state
   #     Can be an integer or "best" or "worst"
   #
   # Returns:
@@ -24,108 +24,44 @@ rankall <- function(outcome, rank="best") {
   #   If the number given by num is larger than the number of hospitals in that
   #   state, then the function returns NA
 
-
-  ## Read outcome data
-  ## Check that state and outcome are valid
-  ## For each state, find the hospital of the given rank
-  ## Return a data frame with the hospital names and the
-  ## (abbreviated) state name
-
   source("utils.R")
   library(plyr)
 
-  # Read outcome data
-  dfOutcomes <- read.csv("outcome-of-care-measures.csv",
-                         colClasses = "character")
+  # Get our data frame of hospitals and given outcomes within the given state
+  dfOutcomes <- GetOutcomes(state="all", outcome)
 
-  mortalityCol <- NULL
+  # Get the numerical index of the hospital rank that we can use in
+  # our dataframe
+  hospitalRank <- TranslateRankToDataFrameIndex(dfOutcomes, rank)
 
-  # Determine the column index to read based on the given outcome
-  if (outcome == "heart attack") {
-    kHeartAttackMortalityCol <- 11
-    mortalityCol <- kHeartAttackMortalityCol
-  } else if (outcome == "heart failure") {
-    kHeartFailureMortalityCol <- 17
-    mortalityCol <- kHeartFailureMortalityCol
-  } else if (outcome == "pneumonia") {
-    kPneumoniaMortalityCol <- 23
-    mortalityCol <- kPneumoniaMortalityCol
-  } else {
-    stop("Invalid outcome: Must be 'heart attack, 'heart failure', 'pnumonia")
-  }
+  kFirstRow <- 1
+  kStateCol <- 2
+  dfOutcomes <- ddply(dfOutcomes,
+                      c("State"),
+                      function(dfOutcomes) {
+                        # If we want the worst rank, return the last element
+                        if (rank == "worst") {
+                          hospitalRank <- nrow(dfOutcomes)
+                        }
 
-  # Convert the heart attack mortality column from string to numeric,
-  # which will introduce a warning about NAs being introduced
-  # This is necessary for the hist call below
-  dfOutcomes[, mortalityCol] <-
-    as.numeric(dfOutcomes[, mortalityCol])
+                        # If the hospitalRank is within the df rows,
+                        # return the df index
+                        # otherwise, return a data frame (NA, state, NA)
+                        if (hospitalRank <= nrow(dfOutcomes)) {
+                          return(dfOutcomes[hospitalRank, ])
+                        } else {
+                          dfResult <- data.frame(NA,
+                                                 dfOutcomes[kFirstRow,
+                                                            kStateCol],
+                                                 NA)
+                          return(dfResult)
+                        }
+                      })
 
-  kStateCol <- 7
+  colnames(dfOutcomes) <- c("hospital", "state", "outcome")
+  dfOutcomes <- subset(dfOutcomes, select=-outcome)
 
-  # Check if we have data on the given state
-  #if (!is.element(state, dfOutcomes[, kStateCol])) {
-  #  stop("State not found in data set")
-  #}
-
-  # Get the subset of hospitals and mortalities for the given state and outcome
-  kHospitalNameCol <- 2
-  dfOutcomesInState <- subset(dfOutcomes,
-                              select=c(kHospitalNameCol,
-                                       kStateCol,
-                                       mortalityCol))
-
-  # Change the column names to something more manageable
-  colnames(dfOutcomesInState) <- c("Hospital.Name", "State", "Outcome")
-
-  # Sort the dataset by outcome and hospital name
-  # Ommit any NAs
-  kResultOutcomeCol <- 2
-  dfOutcomesInState <- dfOutcomesInState[order(dfOutcomesInState$State,
-                                               dfOutcomesInState$Outcome,
-                                               dfOutcomesInState$Hospital.Name,
-                                               na.last=NA), ]
-
-  hospitalRank <- NULL
-
-  # Check if rank is valid
-  if (rank == "best") {
-    hospitalRank <- 1
-  } else if (rank == "worst") {
-    hospitalRank <- nrow(dfOutcomesInState)
-  } else if (IsInteger(rank)) {
-    hospitalRank <- rank
-  } else {
-    stop("Invalid rank")
-  }
-
-  dfOutcomesInState <- ddply(dfOutcomesInState,
-                             c("State"),
-                             function(x) {
-                               if (rank == "worst") {
-                                 hospitalRank <- nrow(x)
-                               }
-
-                               if (hospitalRank <= nrow(x)) {
-                                 return(x[hospitalRank, ])
-                               } else {
-                                 y <- data.frame(x[hospitalRank, 1],
-                                                 x[1, 2],
-                                                 x[hospitalRank, 3])
-
-                                 # Change the column names to
-                                 # something more manageable
-                                 colnames(y) <- c("Hospital.Name",
-                                                  "State",
-                                                  "Outcome")
-
-                                 return(y)
-                               }
-                             })
-
-  colnames(dfOutcomesInState) <- c("hospital", "state", "outcome")
-  dfOutcomesInState <- subset(dfOutcomesInState, select=-outcome)
-
-  return(dfOutcomesInState)
+  return(dfOutcomes)
 }
 
 # Tests
