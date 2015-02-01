@@ -1,3 +1,5 @@
+![alt text](http://donnemartin.com/wp-content/uploads/2014/12/hospital_cover-bw.jpg)
+
 # hospitalquality
 
 R scripts that analyze and rank hospitals based on mortality rates from the Hospital Compare data run by the U.S. Department of Health and Human Services.
